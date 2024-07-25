@@ -6,47 +6,42 @@ exports.handler = async function (event, context) {
     const page = event.queryStringParameters.page || 0;
     const url = `https://www.google.com/search?vet=10ahUKEwjOrdaa_-KGAxUd1gIHHVVnAZUQ06ACCJsO..i&ei=tltwZqDxGabgxc8Piuy3-AU&opi=89978449&rlz=1C1EJFC&yv=3&rciv=jb&nfpr=0&q=jobs&start=${page}0&asearch=jb_list&cs=1&async=_id:VoQFxe,_pms:hts,_fmt:pc`;
 
-    const response = await axios.get(url);
+    const response = await axios.get(url,{
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
     const html = response.data;
     const $ = cheerio.load(html);
 
-    // Scraping titles
+    let currentnum = [];
+    $('div.BjJfJf.PUpOsf').each((i, elem) => {
+      currentnum.push($(elem).text().trim());
+    });
     let titles = [];
     $('div.BjJfJf.PUpOsf').each((i, elem) => {
       titles.push($(elem).text().trim());
     });
-
-    // Scraping job URLs
     let jobElements = [];
-    $('a.result-card__full-card-link').each((i, elem) => {
-      jobElements.push($(elem).attr('href').trim());
+    $('a.pMhGee.Co68jc.j0vryd').each((i, elem) => {
+      jobElements.push($(elem).attr('href'));
     });
-
-    // Scraping descriptions
     let descriptions = [];
-    $('.HBvzbc').each((i, elem) => {
+    $("span.HBvzbc").each((i, elem) => {
       descriptions.push($(elem).text().trim());
     });
-
-    // Scraping locations
-    let locations = [];
+    let tempLocation = [];
     $('div.tJ9zfc').each((i, elem) => {
-      locations.push($(elem).text().trim());
+      tempLocation.push($(elem).text().trim());
     });
-
-    // Scraping companies
     let companies = [];
     $('div.nJlQNd.sMzDkb').each((i, elem) => {
       companies.push($(elem).text().trim());
     });
-
-    // Scraping additional data
     let data = [];
     $('div.ocResc.KKh3md').each((i, elem) => {
       data.push($(elem).text().trim());
     });
-
-    // Scraping names
     let names = [];
     $('div.acCJ4b > div > span > div > span > a > div > div > span').each((i, elem) => {
       names.push($(elem).text().trim());
@@ -55,6 +50,7 @@ exports.handler = async function (event, context) {
     return {
       statusCode: 200,
       body: JSON.stringify({
+        currentnum,
         titles,
         jobElements,
         descriptions,
