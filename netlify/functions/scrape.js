@@ -13,7 +13,24 @@ exports.handler = async function (event, context) {
     });
     const html = response.data;
     const $ = cheerio.load(html);
+    let linksnum = 0;
+    const numofLinks = [];
 
+    $('a').each((index, element) => {
+      if ($(element).hasClass('pMhGee Co68jc j0vryd')) {
+        linksnum += 1;
+      } else {
+        if (linksnum !== 0) {
+          numofLinks.push(linksnum);
+        }
+        linksnum = 0;
+      }
+    });
+
+    // Capture the last set of links if the loop ends on them
+    if (linksnum !== 0) {
+      numofLinks.push(linksnum);
+    }
     let currentnum = [];
     $('div.BjJfJf.PUpOsf').each((i, elem) => {
       currentnum.push($(elem).text().trim());
@@ -50,6 +67,7 @@ exports.handler = async function (event, context) {
     return {
       statusCode: 200,
       body: JSON.stringify({
+        numofLinks,
         currentnum,
         titles,
         jobElements,
