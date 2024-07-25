@@ -54,7 +54,7 @@ exports.handler = async function (event, context) {
         titles,
         jobElements,
         descriptions,
-        locations,
+        tempLocation,
         companies,
         data,
         names,
