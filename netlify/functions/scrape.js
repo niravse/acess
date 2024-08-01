@@ -1,4 +1,5 @@
 const axios = require('axios');
+const cheerio = require('cheerio');
 
 exports.handler = async function(event, context) {
   const page = event.queryStringParameters.page || '0'; // Extract page parameter from the query string
@@ -13,7 +14,7 @@ exports.handler = async function(event, context) {
     
     return {
       statusCode: 200,
-      body: JSON.stringify({ data: response.data })
+      body: JSON.stringify({ data: cheerio.load(response.data) })
     };
   } catch (error) {
     return {
